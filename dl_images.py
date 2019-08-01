@@ -1,4 +1,4 @@
-from keras.preprocessing.image import ImageDataGenerator
+п»їfrom keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential, Model
 from keras.applications import InceptionV3
 from keras.callbacks import ModelCheckpoint
@@ -17,25 +17,25 @@ from sklearn.metrics import recall_score
 import os
 #######################################################################################################################
 #######################################################################################################################
-#                                           ПАРАМЕТРЫ ДЛЯ ИЗМЕНЕНИЯ!!!!!!!!!!!!!!!
+#                                           РџРђР РђРњР•РўР Р« Р”Р›РЇ РР—РњР•РќР•РќРРЇ!!!!!!!!!!!!!!!
 path=r"C:\Users\Dmitry\Desktop\CNN_Research_2018\cats_vs_dogs"
-image_size=(150, 150) # здесь задавать размер входных изображений
-batch_size=32 # выбирать из этих значений [8,16,32]
+image_size=(150, 150) # Р·РґРµСЃСЊ Р·Р°РґР°РІР°С‚СЊ СЂР°Р·РјРµСЂ РІС…РѕРґРЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёР№
+batch_size=32 # РІС‹Р±РёСЂР°С‚СЊ РёР· СЌС‚РёС… Р·РЅР°С‡РµРЅРёР№ [8,16,32]
 batch_size2=100
-inception_nontrainable_layers_count=205 # количество слоёв InceptionV3, чьи веса мы не меняем при обучении, в процессе переноса обучения(transfer learning)
-nb_epoch=1# количество эпох обучения нейронной сети
-fc_nb_epoch=10# количество эпох обучения классификационной части сети
-n_classes=2# количество классов для обучения
+inception_nontrainable_layers_count=205 # РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»РѕС‘РІ InceptionV3, С‡СЊРё РІРµСЃР° РјС‹ РЅРµ РјРµРЅСЏРµРј РїСЂРё РѕР±СѓС‡РµРЅРёРё, РІ РїСЂРѕС†РµСЃСЃРµ РїРµСЂРµРЅРѕСЃР° РѕР±СѓС‡РµРЅРёСЏ(transfer learning)
+nb_epoch=1# РєРѕР»РёС‡РµСЃС‚РІРѕ СЌРїРѕС… РѕР±СѓС‡РµРЅРёСЏ РЅРµР№СЂРѕРЅРЅРѕР№ СЃРµС‚Рё
+fc_nb_epoch=10# РєРѕР»РёС‡РµСЃС‚РІРѕ СЌРїРѕС… РѕР±СѓС‡РµРЅРёСЏ РєР»Р°СЃСЃРёС„РёРєР°С†РёРѕРЅРЅРѕР№ С‡Р°СЃС‚Рё СЃРµС‚Рё
+n_classes=2# РєРѕР»РёС‡РµСЃС‚РІРѕ РєР»Р°СЃСЃРѕРІ РґР»СЏ РѕР±СѓС‡РµРЅРёСЏ
 train_path=os.path.join(path,"test")# FIXME train!!!
 validation_path=os.path.join(path,'validation')
 test_path=os.path.join(path,'test')
-path_to_save_np=path# путь для сохранений нумпай-массивов ПОМЕНЯЙТЕ НА СВОЙ ПУТЬ, КУДА ХОТИТЕ СОХРАНЯТЬ 10 ГБ!!!
+path_to_save_np=path# РїСѓС‚СЊ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёР№ РЅСѓРјРїР°Р№-РјР°СЃСЃРёРІРѕРІ РџРћРњР•РќРЇР™РўР• РќРђ РЎР’РћР™ РџРЈРўР¬, РљРЈР”Рђ РҐРћРўРРўР• РЎРћРҐР РђРќРЇРўР¬ 10 Р“Р‘!!!
 ########################################################################################################################
 ########################################################################################################################
 inc_model=InceptionV3(include_top=False,
                       weights='imagenet',
                       input_shape=((3, image_size[0], image_size[1])))
-bottleneck_datagen = ImageDataGenerator(rescale=1. / 255)  # собственно, генератор
+bottleneck_datagen = ImageDataGenerator(rescale=1. / 255)  # СЃРѕР±СЃС‚РІРµРЅРЅРѕ, РіРµРЅРµСЂР°С‚РѕСЂ
 train_generator = bottleneck_datagen.flow_from_directory(train_path,
                                                          target_size=image_size,
                                                          batch_size=batch_size,
@@ -46,14 +46,14 @@ validation_generator = bottleneck_datagen.flow_from_directory(validation_path,
                                                               batch_size=batch_size,
                                                               class_mode=None,
                                                               shuffle=False)
-bottleneck_features_train = inc_model.predict_generator(train_generator,steps=int(len(train_generator.filenames)/batch_size))# пока не разобрался со steps, мб для универсальности опустить этот параметр
+bottleneck_features_train = inc_model.predict_generator(train_generator,steps=int(len(train_generator.filenames)/batch_size))# РїРѕРєР° РЅРµ СЂР°Р·РѕР±СЂР°Р»СЃСЏ СЃРѕ steps, РјР± РґР»СЏ СѓРЅРёРІРµСЂСЃР°Р»СЊРЅРѕСЃС‚Рё РѕРїСѓСЃС‚РёС‚СЊ СЌС‚РѕС‚ РїР°СЂР°РјРµС‚СЂ
 np.save(open(path_to_save_np+'/bn_features_train.npy', 'wb'), bottleneck_features_train)
 bottleneck_features_validation = inc_model.predict_generator(validation_generator,int(len(validation_generator.filenames)/batch_size))
 np.save(open(path_to_save_np+'/bn_features_validation.npy', 'wb'), bottleneck_features_validation)
 train_data = np.load(open(os.path.join(path_to_save_np,'bn_features_train.npy'), 'rb'))
 train_labels = np.array([0] * int(train_data.shape[0]/2) + [1] * int(train_data.shape[0]/2))
 validation_data = np.load(open(os.path.join(path_to_save_np,'bn_features_validation.npy'), 'rb'))
-validation_labels = np.array([0] * int(validation_data.shape[0]/2) + [1] * int(validation_data.shape[0]/2)) # за счёт отсутсвия перемешивания(shuffle=False) в генераторе(flow_from_directory)
+validation_labels = np.array([0] * int(validation_data.shape[0]/2) + [1] * int(validation_data.shape[0]/2)) # Р·Р° СЃС‡С‘С‚ РѕС‚СЃСѓС‚СЃРІРёСЏ РїРµСЂРµРјРµС€РёРІР°РЅРёСЏ(shuffle=False) РІ РіРµРЅРµСЂР°С‚РѕСЂРµ(flow_from_directory)
 fc_model = Sequential()
 fc_model.add(Flatten(input_shape=train_data.shape[1:]))
 fc_model.add(Dense(64, activation='relu', name='dense_one'))
@@ -70,7 +70,7 @@ fc_model.compile(optimizer='rmsprop',
 fc_model.fit(train_data, train_labels,
             nb_epoch=fc_nb_epoch, batch_size=batch_size,
             validation_data=(validation_data, validation_labels))
-fc_model.save_weights(os.path.join(path_to_save_np,'fc_inception_cats_dogs_250.hdf5')) # сохраняем веса
+fc_model.save_weights(os.path.join(path_to_save_np,'fc_inception_cats_dogs_250.hdf5')) # СЃРѕС…СЂР°РЅСЏРµРј РІРµСЃР°
 fc_model.evaluate(validation_data, validation_labels)
 ################################################################################################
 #                                           PART 2   UNITE 2 MODELS
@@ -85,13 +85,13 @@ if n_classes==2:
 else:
     top_model = Dense(n_classes, activation='softmax', name='output')(x)
 model = Model(input=inc_model.input, output=top_model)
-model.load_weights(weights_filename, by_name=True) # загрузить веса в определённые слои по имени (by_name=True)
+model.load_weights(weights_filename, by_name=True) # Р·Р°РіСЂСѓР·РёС‚СЊ РІРµСЃР° РІ РѕРїСЂРµРґРµР»С‘РЅРЅС‹Рµ СЃР»РѕРё РїРѕ РёРјРµРЅРё (by_name=True)
 for layer in inc_model.layers[:inception_nontrainable_layers_count]:
     layer.trainable = False
 model.compile(loss='binary_crossentropy',
               optimizer=SGD(lr=1e-4, momentum=0.9),
                 #optimizer='rmsprop',
-              metrics=['accuracy']) # тонкая настройка (в первый раз использовали RMSProp, во второй раз используем стохастический градиентный бустинг для того, чтобы веса не слищком сильно обновлялись)
+              metrics=['accuracy']) # С‚РѕРЅРєР°СЏ РЅР°СЃС‚СЂРѕР№РєР° (РІ РїРµСЂРІС‹Р№ СЂР°Р· РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё RMSProp, РІРѕ РІС‚РѕСЂРѕР№ СЂР°Р· РёСЃРїРѕР»СЊР·СѓРµРј СЃС‚РѕС…Р°СЃС‚РёС‡РµСЃРєРёР№ РіСЂР°РґРёРµРЅС‚РЅС‹Р№ Р±СѓСЃС‚РёРЅРі РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РІРµСЃР° РЅРµ СЃР»РёС‰РєРѕРј СЃРёР»СЊРЅРѕ РѕР±РЅРѕРІР»СЏР»РёСЃСЊ)
 filepath=os.path.join(path_to_save_np,"weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5")
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
@@ -99,7 +99,7 @@ train_datagen = ImageDataGenerator(
         rescale=1./255,
         shear_range=0.2,
         zoom_range=0.2,
-        horizontal_flip=True) # здесь происходит аугментация данных, в частности, горизонтальное отражение
+        horizontal_flip=True) # Р·РґРµСЃСЊ РїСЂРѕРёСЃС…РѕРґРёС‚ Р°СѓРіРјРµРЅС‚Р°С†РёСЏ РґР°РЅРЅС‹С…, РІ С‡Р°СЃС‚РЅРѕСЃС‚Рё, РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ РѕС‚СЂР°Р¶РµРЅРёРµ
 test_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_path,
@@ -123,8 +123,8 @@ model.fit_generator(
         validation_data=validation_generator,
     validation_steps=np.ceil(validation_data.shape[0]/batch_size),
     callbacks=callbacks_list)
-model.evaluate_generator(pred_generator, val_samples=batch_size2)# val_samples должен быть равен величине батча в генераторе!!!
-imgs,labels=pred_generator.next() # загружает изображения в генератор и присваивает ей label
+model.evaluate_generator(pred_generator, val_samples=batch_size2)# val_samples РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЂР°РІРµРЅ РІРµР»РёС‡РёРЅРµ Р±Р°С‚С‡Р° РІ РіРµРЅРµСЂР°С‚РѕСЂРµ!!!
+imgs,labels=pred_generator.next() # Р·Р°РіСЂСѓР¶Р°РµС‚ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ РіРµРЅРµСЂР°С‚РѕСЂ Рё РїСЂРёСЃРІР°РёРІР°РµС‚ РµР№ label
 array_imgs=np.transpose(np.asarray([img_to_array(img) for img in imgs]),(0,2,1,3))
 predictions=model.predict(imgs)
 rounded_pred=np.asarray([np.round(i) for i in predictions])

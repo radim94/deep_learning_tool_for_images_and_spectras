@@ -1,4 +1,4 @@
-import pandas as pd
+п»їimport pandas as pd
 import pandas as pd
 from keras.utils import to_categorical
 #one-hot encode target column
@@ -17,15 +17,15 @@ from sklearn.metrics import recall_score
 import numpy as np
 #######################################################################################################################
 #######################################################################################################################
-#                                               ПАРАМЕТРЫ ДЛЯ ИЗМЕНЕНИЯ
+#                                               РџРђР РђРњР•РўР Р« Р”Р›РЇ РР—РњР•РќР•РќРРЇ
 path=r"C:\Users\Dmitry\output.xlsx"#r"C:\Users\16681613\Downloads\kozha_diagnoz_glazhennye_dlya_obedinenia.xlsx"
-test_size=0.15## какую часть от всех данных отводить на тест
-batch_size=8# размер батча
-epochs=10# количество эпох
+test_size=0.15## РєР°РєСѓСЋ С‡Р°СЃС‚СЊ РѕС‚ РІСЃРµС… РґР°РЅРЅС‹С… РѕС‚РІРѕРґРёС‚СЊ РЅР° С‚РµСЃС‚
+batch_size=8# СЂР°Р·РјРµСЂ Р±Р°С‚С‡Р°
+epochs=10# РєРѕР»РёС‡РµСЃС‚РІРѕ СЌРїРѕС…
 n_classes=6
 
 ########################################################################################################################
-#                                                  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+#                                                  Р’РЎРџРћРњРћР“РђРўР•Р›Р¬РќР«Р• Р¤РЈРќРљР¦РР
 def proba2class_num(y_pred):
     s=[]
     for arr in y_pred:
@@ -41,8 +41,8 @@ try:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42,stratify=y)
 except ValueError:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-#здесь по-хорошему должен быть параметр stratify=y , чтобы в тесте и трейне содержание выборки
-# было пропорционально исходной, но когда мало образцов класса может быть ошибка, что слищком мало образцов класса в трейне для обучения
+#Р·РґРµСЃСЊ РїРѕ-С…РѕСЂРѕС€РµРјСѓ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїР°СЂР°РјРµС‚СЂ stratify=y , С‡С‚РѕР±С‹ РІ С‚РµСЃС‚Рµ Рё С‚СЂРµР№РЅРµ СЃРѕРґРµСЂР¶Р°РЅРёРµ РІС‹Р±РѕСЂРєРё
+# Р±С‹Р»Рѕ РїСЂРѕРїРѕСЂС†РёРѕРЅР°Р»СЊРЅРѕ РёСЃС…РѕРґРЅРѕР№, РЅРѕ РєРѕРіРґР° РјР°Р»Рѕ РѕР±СЂР°Р·С†РѕРІ РєР»Р°СЃСЃР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС€РёР±РєР°, С‡С‚Рѕ СЃР»РёС‰РєРѕРј РјР°Р»Рѕ РѕР±СЂР°Р·С†РѕРІ РєР»Р°СЃСЃР° РІ С‚СЂРµР№РЅРµ РґР»СЏ РѕР±СѓС‡РµРЅРёСЏ
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 print("Size of train set: "+str(X_train.shape))
@@ -78,7 +78,7 @@ model_m.add(Dense(100, activation='relu',kernel_initializer='lecun_uniform'))
 model_m.add(Dropout(0.5))
 model_m.add(Dense(n_classes, activation='softmax'))
 print(model_m.summary())
-sgd = optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)#TODO заменить SGD optimizer на что-то другое
+sgd = optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)#TODO Р·Р°РјРµРЅРёС‚СЊ SGD optimizer РЅР° С‡С‚Рѕ-С‚Рѕ РґСЂСѓРіРѕРµ
 model_m.compile(loss = 'categorical_crossentropy', optimizer = sgd, metrics = ['accuracy'])
 model_m.fit(X_train, y_train, batch_size = batch_size, epochs = epochs)
 y_pred=model_m.predict(X_test)
